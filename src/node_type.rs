@@ -1,21 +1,22 @@
 use std::cmp::{Ord, Ordering, Eq, PartialOrd};
 use std::convert::From;
 use std::convert::TryFrom;
+use crate::page_layout::{PTR_SIZE};
 
 #[derive(Eq, PartialEq, Clone, Debug)]
 pub struct Offset(pub usize);
 
 // Try to convert from BigEndian bytes array into an Offset representation of its BigEndian integer
-impl TryFrom([u8, PTR_SIZE]) for Offset {
-    type Error = Error
+impl TryFrom([u8; PTR_SIZE]) for Offset {
+    type Error = Error;
 
-    fn try_from(arr: [u8, PTR_SIZE]) -> Result<Self, Self::Error> {
+    fn try_from(arr: [u8; PTR_SIZE]) -> Result<Self, Self::Error> {
         Ok(Offset(usize::from_be_bytes(arr)))
     }
 }
 // A NodeType represents different node type inside a node
 #[derive(Eq, Clone, Debug, PartialEq)]
-pub struct NodeType {
+pub enum NodeType {
     // Internal node contains a vector of pointers to their children and a vector of keys
     Internal(Vec<Offset>, Vec<Key>),
 
@@ -48,9 +49,7 @@ impl From(&NodeType) for u8 {
 }
 
 #[derive(Clone, Eq, Debug, Ord, PartialOrd, PartialEq)]
-pub struct Key {
-    pub String
-}
+pub struct Key (pub String);
 
 #[derive(Clone, Eq, Debug)]
 pub struct KeyValuePair {
